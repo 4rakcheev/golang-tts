@@ -130,7 +130,7 @@ func (tts *TTS) Language(lang string) {
 	tts.request.LanguageCode = fmt.Sprintf("%s", lang)
 }
 
-func (tts *TTS) Speech(text string) (data []byte, err error) {
+func (tts *TTS) Speech(text string) ([]byte, error) {
 	tts.request.Text = text
 
 	b, err := json.Marshal(tts.request)
@@ -151,11 +151,10 @@ func (tts *TTS) Speech(text string) (data []byte, err error) {
 	}
 
 	defer func() {
-		err = res.Body.Close()
+		res.Body.Close()
 	}()
 
-	data, err = ioutil.ReadAll(res.Body)
-
+	data, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return []byte{}, err
 	} else if res.StatusCode != 200 {
