@@ -73,6 +73,14 @@ const (
 	Matthew   = "Matthew"
 )
 
+type ErrPollyBadRequest struct {
+	err string
+}
+
+func (e *ErrPollyBadRequest) Error() string {
+	return e.err
+}
+
 type format int
 type rate int
 type voice int
@@ -157,6 +165,8 @@ func (tts *TTS) Speech(text string) ([]byte, error) {
 	data, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return []byte{}, err
+	} else if res.StatusCode == 400 {
+		return []byte{}, &ErrPollyBadRequest{string(data)}
 	} else if res.StatusCode != 200 {
 		return []byte{}, fmt.Errorf("returned status code: %s %q", res.Status, data)
 	}
